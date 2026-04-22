@@ -1,5 +1,11 @@
 # AlphaPulse – AI Stock News Simplifier for Beginners
 
+## Lovable generated
+
+https://alphapulsezhang.lovable.app
+
+---
+
 ## Project Overview
 
 **AlphaPulse** is a beginner-friendly web application designed to help new investors understand stock news and turn complex financial headlines into clear, actionable insights.
