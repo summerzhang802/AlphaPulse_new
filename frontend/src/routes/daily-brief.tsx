@@ -20,20 +20,25 @@ function BriefPage() {
   return (
     <AppLayout>
       <PageHeader title="Daily Brief" description="Three insights from your watchlist, hand-picked to cut through the noise. Read it in under 3 minutes." />
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
         <Sunrise className="h-4 w-4 text-accent" />
-        {today}
+        <span className="font-medium text-foreground">{today}</span>
+        <span className="text-border">·</span>
+        <span>3 insights</span>
       </div>
-      <div className="space-y-5">
+      <div className="space-y-4">
         {dailyBrief.map((b, i) => (
-          <article key={b.ticker} className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] transition animate-fade-in">
-            <div className="flex flex-wrap items-center gap-3 mb-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/5 text-xs font-semibold text-primary">{i + 1}</div>
-              <span className="text-sm font-semibold tracking-wide text-primary">{b.ticker}</span>
+          <article key={b.ticker} className="group rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] transition animate-fade-in">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/5 text-[11px] font-semibold text-primary tabular-nums">{i + 1}</div>
+                <span className="text-sm font-semibold tracking-tight text-foreground">{b.ticker}</span>
+                <span className="text-xs text-muted-foreground">NASDAQ</span>
+              </div>
               <ImpactBadge impact={b.impact} />
             </div>
-            <h2 className="text-lg sm:text-xl font-semibold leading-snug text-foreground">{b.headline}</h2>
-            <p className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground">{b.explanation}</p>
+            <h2 className="text-xl sm:text-2xl font-semibold leading-snug tracking-tight text-foreground">{b.headline}</h2>
+            <p className="mt-3 text-sm sm:text-[15px] leading-relaxed text-muted-foreground max-w-3xl">{b.explanation}</p>
           </article>
         ))}
       </div>

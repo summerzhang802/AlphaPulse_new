@@ -34,12 +34,12 @@ export function PageHeader({ title, description }: { title: string; description:
 
 export function ImpactBadge({ impact }: { impact: "Bullish" | "Bearish" | "Neutral" }) {
   const styles = {
-    Bullish: "bg-bullish/10 text-bullish border-bullish/20",
-    Bearish: "bg-bearish/10 text-bearish border-bearish/20",
-    Neutral: "bg-neutral/10 text-neutral border-neutral/20",
+    Bullish: "bg-bullish/10 text-bullish ring-1 ring-inset ring-bullish/20",
+    Bearish: "bg-bearish/10 text-bearish ring-1 ring-inset ring-bearish/20",
+    Neutral: "bg-neutral/10 text-neutral ring-1 ring-inset ring-neutral/20",
   } as const;
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${styles[impact]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase ${styles[impact]}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
       {impact}
     </span>
@@ -48,11 +48,11 @@ export function ImpactBadge({ impact }: { impact: "Bullish" | "Bearish" | "Neutr
 
 export function ActionPill({ action }: { action: "Monitor" | "Hold" | "Reduce Risk" }) {
   const styles = {
-    Monitor: "bg-secondary text-foreground",
-    Hold: "bg-bullish/10 text-bullish",
-    "Reduce Risk": "bg-bearish/10 text-bearish",
+    Monitor: "bg-secondary text-foreground ring-1 ring-inset ring-border",
+    Hold: "bg-bullish/10 text-bullish ring-1 ring-inset ring-bullish/20",
+    "Reduce Risk": "bg-bearish/10 text-bearish ring-1 ring-inset ring-bearish/20",
   } as const;
   return (
-    <span className={`rounded-full px-3 py-1 text-xs font-medium ${styles[action]}`}>{action}</span>
+    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${styles[action]}`}>{action}</span>
   );
 }
