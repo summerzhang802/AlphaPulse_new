@@ -175,7 +175,7 @@ def evaluate_portfolio(req: PortfolioRequest):
 def ai_news(req: NewsAIRequest):
     if not client:
         return {
-            "summary": f"{req.ticker.upper()} — {req.headline} In simple terms: this headline was received, but GROQ_API_KEY is not set yet.",
+            "summary": f"{req.ticker.upper()} — {req.headline} In simple terms: this headline was received, but GROQ_API_KEY is not set yet. It may matter for investors, but the AI service is not connected right now.",
             "impact": "Neutral"
         }
 
@@ -189,13 +189,15 @@ Headline: {req.headline}
 
 Return this exact JSON format:
 {{
-  "summary": "one simple sentence for a beginner",
+  "summary": "2 to 3 simple beginner-friendly sentences",
   "impact": "Bullish"
 }}
 
 Rules:
 - impact must be exactly one of: Bullish, Bearish, Neutral
-- summary must be short and easy to understand
+- summary must be 2 to 3 short sentences
+- summary must be easy to understand for a beginner
+- explain what happened and why it may matter
 - do not include markdown
 - do not include extra text
 """
