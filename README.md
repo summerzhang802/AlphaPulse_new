@@ -170,3 +170,159 @@ AI Processing (Groq LLM)
 * Tailwind CSS
 * shadcn-ui
 * Vite
+
+### Backend
+
+* Python
+* FastAPI
+* SQLite database
+
+### AI Integration
+
+* Groq API
+* LLaMA 3.1 model
+
+### Deployment
+
+* Backend hosted on Render
+* Frontend developed with Lovable
+
+---
+
+## LLM Integration
+
+AlphaPulse integrates a large language model through the Groq API.
+
+The AI is used to:
+
+* analyze stock news headlines
+* generate simplified explanations
+* classify news sentiment
+
+Example prompt structure:
+
+```
+Ticker: AAPL
+Headline: Apple beats earnings expectations due to strong iPhone sales
+```
+
+The model returns structured output:
+
+```
+Summary: Apple reported stronger earnings due to strong iPhone demand.
+Impact: Bullish
+```
+
+---
+
+## Data Source
+
+The application uses **SQLite** as its primary data storage.
+
+Stored data includes:
+
+* Watchlist items
+* Decision log entries
+* User interaction records
+
+SQLite was chosen because it is lightweight, easy to deploy, and suitable for prototype applications.
+
+---
+
+## Deployment
+
+The backend service is deployed as a FastAPI web service.
+
+Render automatically builds and deploys the application from GitHub.
+
+Backend start command:
+
+```
+uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+The frontend communicates with the backend through REST API endpoints.
+
+---
+
+## API Endpoints
+
+Examples of available endpoints:
+
+```
+GET /watchlist
+GET /decision_logs
+POST /decision_logs
+POST /ai_news
+```
+
+Example request:
+
+```
+POST /ai_news
+```
+
+Body:
+
+```
+{
+  "ticker": "AAPL",
+  "headline": "Apple beats earnings expectations due to strong iPhone sales"
+}
+```
+
+---
+
+## Evaluation Plan
+
+The application can be evaluated using usability testing.
+
+Users will complete tasks such as:
+
+* adding a stock to the watchlist
+* interpreting a news summary
+* recording an investment decision
+* generating a portfolio allocation
+
+Evaluation metrics include:
+
+* task completion time
+* clarity of explanations
+* usefulness of AI insights
+
+---
+
+## Ethics and Safety
+
+AlphaPulse does **not provide financial advice**.
+
+The AI-generated insights are designed for educational purposes only.
+
+Users should not rely solely on this application when making investment decisions.
+
+Financial markets involve risk, and investment outcomes are not guaranteed.
+
+---
+
+## Disclaimer
+
+This project is intended for educational and demonstration purposes only.
+
+The AI-generated insights are not investment recommendations and should not be considered financial advice.
+
+Always conduct independent research before making investment decisions.
+
+---
+
+## Future Improvements
+
+Possible future enhancements include:
+
+* real-time financial news integration
+* automated news scraping
+* portfolio tracking
+* sentiment trend analysis
+* personalized risk scoring
+* authentication system
+
+---
