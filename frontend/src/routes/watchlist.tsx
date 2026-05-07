@@ -25,6 +25,8 @@ type WatchlistItem = {
   change: number;
 };
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 function riskColor(r: number) {
   if (r < 30) return "bg-bullish";
   if (r < 60) return "bg-amber-500";
@@ -42,7 +44,7 @@ function WatchlistPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch("http://127.0.0.1:8000/watchlist");
+        const res = await fetch(`${API_BASE}/watchlist`);
         if (!res.ok) {
           throw new Error("Failed to fetch watchlist");
         }
