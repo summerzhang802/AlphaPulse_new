@@ -15,34 +15,61 @@ export const Route = createFileRoute("/simplifier")({
   component: SimplifierPage,
 });
 
-type Result = { summary: string; impact: "Bullish" | "Bearish" | "Neutral" };
+type Result = {
+  summary: string;
+  impact: "Bullish" | "Bearish" | "Neutral";
+};
 
-function fakeSimplify(ticker: string, headline: string): Result {
-  const h = headline.toLowerCase();
-  const positive = ["beat", "surge", "record", "strong", "growth", "profit", "demand", "expands", "wins"];
-  const negative = ["miss", "drop", "fall", "cut", "lawsuit", "decline", "weak", "loss", "warns"];
-  let score = 0;
-  positive.forEach((w) => h.includes(w) && score++);
-  negative.forEach((w) => h.includes(w) && score--);
-  const impact: Result["impact"] = score > 0 ? "Bullish" : score < 0 ? "Bearish" : "Neutral";
-  const summary = `${ticker.toUpperCase()} — ${headline.trim()} In simple terms: this story suggests ${
-    impact === "Bullish"
-      ? "the company is doing better than expected, which investors usually take as a good sign."
-      : impact === "Bearish"
-      ? "the company is facing pressure that could weigh on its share price in the short term."
-      : "no major change in the company's direction — it's worth monitoring without acting."
-  }`;
-  return { summary, impact };
-}
+const API_BASE = "http://127.0.0.1:8000";
 
 function SimplifierPage() {
   const [ticker, setTicker] = useState("AAPL");
-  const [headline, setHeadline] = useState("Apple reported stronger-than-expected earnings driven by high iPhone demand.");
+  const [headline, setHeadline] = useState(
+    "Apple reported stronger-than-expected earnings driven by high iPhone demand."
+  );
   const [result, setResult] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function simplifyWithAI() {
+    if (!ticker.trim() || !headline.trim()) return;
+
+    try {
+      setLoading(true);
+      setError("");
+      setResult(null);
+
+      const res = await fetch(`${API_BASE}/ai_news`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ticker: ticker.trim().toUpperCase(),
+          headline: headline.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to analyze news: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      console.error("ai_news error:", err);
+      setError("Could not analyze this headline right now.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <AppLayout>
-      <PageHeader title="AI News Simplifier" description="Paste any stock headline. We'll translate it into plain English and tell you the likely market impact." />
+      <PageHeader
+        title="AI News Simplifier"
+        description="Paste any stock headline. We'll translate it into plain English and tell you the likely market impact."
+      />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3 rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-[var(--shadow-card)]">
@@ -50,13 +77,17 @@ function SimplifierPage() {
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase">
               <Sparkles className="h-3.5 w-3.5" /> AI assistant
             </div>
-            <span className="text-[11px] font-medium text-muted-foreground">Powered by AlphaPulse AI</span>
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Powered by AlphaPulse AI
+            </span>
           </div>
 
           <div className="space-y-5">
             <div className="grid gap-5 sm:grid-cols-[140px_1fr]">
               <div>
-                <label className="block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">Ticker</label>
+                <label className="block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">
+                  Ticker
+                </label>
                 <div className="relative">
                   <TrendingUp className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <input
@@ -68,8 +99,11 @@ function SimplifierPage() {
                   />
                 </div>
               </div>
+
               <div>
-                <label className="block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">News headline</label>
+                <label className="block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">
+                  News headline
+                </label>
                 <div className="relative">
                   <textarea
                     value={headline}
@@ -83,42 +117,62 @@ function SimplifierPage() {
                     {headline.length}/300
                   </span>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">Tip: works best with a single, complete headline.</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Tip: works best with a single, complete headline.
+                </p>
               </div>
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 border-t border-border/60">
               <button
-                onClick={() => { setHeadline(""); setResult(null); }}
+                onClick={() => {
+                  setHeadline("");
+                  setResult(null);
+                  setError("");
+                }}
                 className="text-xs font-medium text-muted-foreground hover:text-foreground transition"
               >
                 Clear input
               </button>
+
               <button
-                onClick={() => setResult(fakeSimplify(ticker, headline))}
-                disabled={!ticker || !headline}
+                onClick={simplifyWithAI}
+                disabled={!ticker || !headline || loading}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                <Wand2 className="h-4 w-4" /> Simplify with AI
+                <Wand2 className="h-4 w-4" />
+                {loading ? "Analyzing..." : "Simplify with AI"}
               </button>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-2">
-          {result ? (
+          {error ? (
+            <div className="rounded-2xl border border-bearish/20 bg-bearish/5 p-6 text-sm text-bearish shadow-[var(--shadow-card)]">
+              {error}
+            </div>
+          ) : result ? (
             <div className="rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] animate-fade-in h-full overflow-hidden flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-secondary/40">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">AI summary</span>
+                  <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    AI summary
+                  </span>
                 </div>
                 <ImpactBadge impact={result.impact} />
               </div>
+
               <div className="px-6 py-5 flex-1">
-                <div className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">{ticker.toUpperCase()}</div>
-                <p className="text-[15px] leading-relaxed text-foreground">{result.summary}</p>
+                <div className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2">
+                  {ticker.toUpperCase()}
+                </div>
+                <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-line">
+                  {result.summary}
+                </p>
               </div>
+
               <div className="mx-6 mb-6 rounded-xl bg-secondary/70 p-4 text-xs text-muted-foreground leading-relaxed">
                 Use this as a starting point for your own thinking. AlphaPulse provides educational insights, not financial advice.
               </div>
@@ -128,7 +182,9 @@ function SimplifierPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <p className="text-sm text-muted-foreground max-w-[220px]">Your simplified summary will appear here.</p>
+              <p className="text-sm text-muted-foreground max-w-[220px]">
+                Your simplified summary will appear here.
+              </p>
             </div>
           )}
         </div>
